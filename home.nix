@@ -6,10 +6,15 @@
   lib,
   ...
 }:
+let
+  homeDir = "/home/${username}";
+  venvsDir = "${homeDir}/.venvs";
+  globalEnvPath = "${venvsDir}/global";
+in
 
 {
   home.username = username;
-  home.homeDirectory = "/home/${username}";
+  home.homeDirectory = homeDir;
   # home.backupFileExtension = "backup";
 
   home.packages = with pkgs; [
@@ -41,6 +46,7 @@
     # Version and environment managers
     asdf-vm
     uv
+    mise
 
     # cloud storage
     pcloud
@@ -167,7 +173,12 @@
       "[nix]" = {
         "editor.defaultFormatter" = "jnoortheen.nix-ide";
       };
-
+      "[shellscript]" = {
+        "editor.defaultFormatter" = "mads-hartmann.bash-ide-vscode";
+      };
+      "[ignore]" = {
+        "editor.defaultFormatter" = "foxundermoon.shell-format";
+      };
     };
     # settings = { "editor.tabSize" = 2; };
   };
@@ -242,6 +253,11 @@
         PATH="$HOME/.nix-profile/bin:$PATH"
       fi
 
+      # set PATH for global uv binaries
+      if [ -d "${globalEnvPath}/bin" ] ; then
+        PATH="${globalEnvPath}/bin:$PATH"
+      fi
+
       # Add /custom/share to XDG_DATA_DIRS
       if [ -d "$HOME/.nix-profile/share" ] ; then
         export XDG_DATA_DIRS="$HOME/.nix-profile/share:$XDG_DATA_DIRS"
@@ -263,13 +279,32 @@
       com.cherry_ai.CherryStudio
 
       # Productivity
-      io.github.Qalculate.qalculate-qt
+      # io.github.Qalculate.qalculate-qt
 
       # Files
-      io.kapsa.drive
+      # io.kapsa.drive
     )
     for app in "''${apps[@]}"; do
       flatpak install --user -y flathub "$app"
+    done
+  '';
+
+  home.activation.createUvEnvs = lib.hm.dag.entryAfter [ "flatpakSetup" ] ''
+    if [ ! -f "${globalEnvPath}" ]; then
+      mkdir -p ${globalEnvPath}
+      /home/workstation/.nix-profile/bin/uv venv ${globalEnvPath}
+      
+    fi
+
+  '';
+
+  home.activation.updateUvEnvs = lib.hm.dag.entryAfter [ "createUvEnvs" ] ''
+    whls=(
+      # AI
+      huggingface_hub[cli]
+    )
+    for whl in "''${whls[@]}"; do
+      /home/workstation/.nix-profile/bin/uv pip install -p ${globalEnvPath} -U "$whl"
     done
   '';
 
