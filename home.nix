@@ -15,13 +15,13 @@ in
 {
   home.username = username;
   home.homeDirectory = homeDir;
-  # home.backupFileExtension = "backup";
 
   home.packages = with pkgs; [
     # nix
     nixfmt-rfc-style
     nixglPkgs.nixGLIntel
     nixglPkgs.nixVulkanIntel
+    nil
 
     # dev
     drawio
@@ -34,6 +34,7 @@ in
     ansible-lint
 
     # AI
+    n8n
     lmstudio
     ollama-cuda
     open-webui
@@ -41,6 +42,9 @@ in
     warp-terminal
     chatbox
     private-gpt
+    streamlit
+    # gradio
+    # langchain
     # text-generation-webui
 
     # Version and environment managers
@@ -117,12 +121,14 @@ in
     solaar
 
     # files
-    # tree
+    tree
     rsync
     unison
     aria2
     uget
     uget-integrator
+    yt-dlp
+    ytdl-sub
 
     # remote desktop
     remmina
@@ -140,10 +146,8 @@ in
     # ananicy-cpp
     # bfg-repo-cleaner
 
-    #     - vim-runtime
-    #     - vim-doc
-    #     - vim-scripts
-    #     - vim-gtk3
+    # cloud flare tunnel
+
   ];
   home.stateVersion = "25.05";
 
@@ -163,6 +167,7 @@ in
       ms-vscode-remote.remote-ssh-edit
       saoudrizwan.claude-dev
       # roo code
+      # ext install rxliuli.joplin-vscode-plugin
     ];
     userSettings = {
       "yaml.format.enable" = true;
@@ -170,6 +175,10 @@ in
       "editor.defaultFormatter" = "redhat.vscode-yaml";
       "editor.formatOnSave" = true;
       "bashIde.explainshellEndpoint" = "https://explainshell.com/"; # host explainshell if things are slower and useful
+      "files.autoSave" = "afterDelay";
+      "nix.enableLanguageServer" = true;
+      "nix.serverPath" = "nil";
+
       "[nix]" = {
         "editor.defaultFormatter" = "jnoortheen.nix-ide";
       };
@@ -219,7 +228,6 @@ in
   home.file.".profile" = {
     enable = true;
     text = ''
-      # managed by nix
       # ~/.profile: executed by the command interpreter for login shells.
       # This file is not read by bash(1), if ~/.bash_profile or ~/.bash_login
       # exists.
@@ -279,10 +287,10 @@ in
       com.cherry_ai.CherryStudio
 
       # Productivity
-      # io.github.Qalculate.qalculate-qt
+      io.github.Qalculate.qalculate-qt
 
       # Files
-      # io.kapsa.drive
+      io.kapsa.drive
     )
     for app in "''${apps[@]}"; do
       flatpak install --user -y flathub "$app"
@@ -302,6 +310,8 @@ in
     whls=(
       # AI
       huggingface_hub[cli]
+      nvitop
+      gpustat
     )
     for whl in "''${whls[@]}"; do
       /home/workstation/.nix-profile/bin/uv pip install -p ${globalEnvPath} -U "$whl"

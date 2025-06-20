@@ -12,6 +12,7 @@
       - apt-rdepends
       - apt-file
       - apt-transport-https
+      - apt-src
       - bash-completion
       - gnupg
       - curl
