@@ -1,2 +1,8 @@
-- src: geerlingguy.docker
-  version: 7.4.7
+roles:
+  - src: geerlingguy.docker
+    version: 7.4.7
+
+collections:
+  - name: git+https://github.com/k3s-io/k3s-ansible.git
+    type: git
+    version: HEAD # or use a tag or commit SHA

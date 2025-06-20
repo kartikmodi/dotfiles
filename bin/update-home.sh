@@ -1,3 +1,5 @@
-# home-manager switch --flake /home/workstation/dotfiles
-# home-manager switch --flake .#workstation
-home-manager switch --flake /home/workstation/dotfiles#workstation
+#!/usr/bin/env bash
+set -ex
+
+# NIX_DEBUG=2 
+home-manager switch --flake /home/workstation/dotfiles#workstation -b backup --verbose # --show-trace

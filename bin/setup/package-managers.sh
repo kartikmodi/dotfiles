@@ -12,7 +12,7 @@ sudo usermod -aG nix-users workstation # This might be avoided with authorized u
 #then relogin and try again
 
 #Install flatpak to install IDE, and basic stuff
-sudo apt install flatpak
+sudo apt install flatpak ansible
 
 # run after installing flatpak
 sudo flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo

@@ -3,7 +3,7 @@
 - hosts: localhost
   tags: always
   become: true
-#  connection: local
+  #  connection: local
   pre_tasks:
     - name: pre-run | update apt cache
       tags: always
@@ -14,9 +14,6 @@
 - hosts: localhost
   tags: root_user
   become: true
-  #  become_user: workstation
-  #  connection: local
-#  become: true
   roles:
     - root_user
     - geerlingguy.docker
@@ -25,13 +22,12 @@
     docker_users:
       - "workstation"
 
-#    - role: workstation
-#      become: yes
-#      become_user: workstation
+# - hosts: vm
+#   become: true
+#   roles: 
+#   - k3s-io.k3s-ansible.k3s-server
 
-#- hosts: workstation
-#  tags: workstation
-#  become: true
-#  connection: local
-#  roles:
-#    - workstation
+# - hosts: nas
+#   become: true
+#   roles: 
+#   - k3s-io.k3s-ansible.k3s-server
