@@ -19,6 +19,7 @@ in
   home.packages = with pkgs; [
     #hardware
     solaar
+    # cudatoolkit
 
     # nix
     nixfmt-rfc-style
@@ -319,5 +320,42 @@ in
       /home/workstation/.nix-profile/bin/uv pip install -p ${globalEnvPath} -U "$whl"
     done
   '';
+
+  # systemd.user.services.ollama-cuda = {
+  #   Unit = {
+  #     Description = "Ollama model server";
+  #     After = [ "network.target" ];
+  #   };
+  #   Service = {
+  #     Environment = [
+  #       "OLLAMA_DEBUG=1"
+  #     ];
+  #     ExecStart = "${pkgs.ollama}/bin/ollama serve";
+  #     Restart = "always";
+  #   };
+  #   Install = {
+  #     WantedBy = [ "default.target" ];
+  #   };
+  # };
+
+  systemd.user.services.open-webui = {
+    Unit = {
+      Description = "Open WebUI";
+      After = [ "network.target" ];
+    };
+
+    Service = {
+      ExecStart = "${pkgs.open-webui}/bin/open-webui serve --port 3000";
+      # Restart = "on-failure";
+      Environment = [
+        "OLLAMA_BASE_URL=http://localhost:11434"
+        "DATA_DIR=%h"
+      ];
+    };
+
+    Install = {
+      WantedBy = [ "default.target" ];
+    };
+  };
 
 }
