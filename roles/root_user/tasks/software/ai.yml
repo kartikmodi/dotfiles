@@ -17,6 +17,9 @@
       After=network-online.target
 
       [Service]
+      Environment="OLLAMA_NUM_PARALLEL=4"
+      Environment="OLLAMA_MAX_LOADED_MODELS=4"
+      Environment="OLLAMA_MAX_QUEUE=2048" 
       Environment="OLLAMA_DEBUG=1"
       Environment="OLLAMA_HOST=0.0.0.0"
       User=workstation
