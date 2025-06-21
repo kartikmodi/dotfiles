@@ -3,3 +3,4 @@ hosts.ini
 roles/geerlingguy.docker
 .lock
 settings.json
+collections

@@ -1,4 +1,5 @@
 - import_tasks: software/audio.yml
+- import_tasks: software/ai.yml
 - import_tasks: software/init.yml
 - import_tasks: software/intel.yml
 - import_tasks: software/kde.yml

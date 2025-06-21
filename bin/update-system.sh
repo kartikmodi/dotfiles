@@ -5,4 +5,4 @@ set -ex
 ansible-galaxy install -r /home/workstation/dotfiles/requirements.yml --roles-path=roles
 ansible-galaxy collection install -r /home/workstation/dotfiles/requirements.yml
 
-ansible-playbook -i /home/workstation/dotfiles/hosts.ini main.yml --vv
+ansible-playbook -i /home/workstation/dotfiles/hosts.ini main.yml --verbose

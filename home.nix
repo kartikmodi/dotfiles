@@ -17,6 +17,9 @@ in
   home.homeDirectory = homeDir;
 
   home.packages = with pkgs; [
+    #hardware
+    solaar
+
     # nix
     nixfmt-rfc-style
     nixglPkgs.nixGLIntel
@@ -31,12 +34,12 @@ in
     bash-language-server # mads-hartmann.bash-ide-vscode dep
     shfmt # foxundermoon.shell-format and mads-hartmann.bash-ide-vscode dep
     shellcheck # mads-hartmann.bash-ide-vscode dep
-    ansible-lint
+    # ansible-lint
 
     # AI
     n8n
     lmstudio
-    ollama-cuda
+    # ollama-cuda
     open-webui
     librechat
     warp-terminal
@@ -117,9 +120,6 @@ in
     wireshark
     curlFull
 
-    #hardware
-    solaar
-
     # files
     tree
     rsync
@@ -188,6 +188,8 @@ in
       "[ignore]" = {
         "editor.defaultFormatter" = "foxundermoon.shell-format";
       };
+      "workbench.colorTheme" = "Default Light+";
+
     };
     # settings = { "editor.tabSize" = 2; };
   };
