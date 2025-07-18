@@ -52,7 +52,7 @@ in
     postgresql
     mongodb
     nodejs
-    duckdb
+    # duckdb
     #nodePackages.npm
     #nodePackages.dotenv-cli
 
@@ -70,6 +70,7 @@ in
     zellij
     wezterm
     awscli2
+    aws-vault
 
     # AI
     n8n
@@ -389,6 +390,9 @@ in
       huggingface_hub[cli]
       nvitop
       gpustat
+
+      # DB
+      # duckdb
     )
     for whl in "''${whls[@]}"; do
       ${uvBin} pip install -p ${globalEnvPath} -U "$whl"
