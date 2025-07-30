@@ -48,11 +48,13 @@ in
     nil
 
     # dev
-    drawio
+    # drawio
     postgresql
     mongodb
     nodejs
-    # duckdb
+    clickhouse
+    clickhouse-cli
+    # duckdb # does not work very well, install the offical way
     #nodePackages.npm
     #nodePackages.dotenv-cli
 
@@ -71,18 +73,20 @@ in
     wezterm
     awscli2
     aws-vault
+    parquet-tools
+    arrow-cpp
 
     # AI
     n8n
     lmstudio
     # ollama-cuda
-    open-webui
+    # open-webui
     librechat
 
     warp-terminal
-    chatbox # desktop app, android also available
-    private-gpt
-    streamlit
+    # chatbox # desktop app, android also available
+    # private-gpt
+    # streamlit
     # gradio
     # langchain
     # text-generation-webui
@@ -118,7 +122,7 @@ in
     gimp3-with-plugins
     openshot-qt
     vlc
-    stremio
+    # stremio
 
     # obs-plugins
     obs-studio
@@ -215,16 +219,21 @@ in
       ms-vscode-remote.remote-ssh
       ms-vscode-remote.remote-ssh-edit
       saoudrizwan.claude-dev
-      # roo code
-      # ext install rxliuli.joplin-vscode-plugin
-      # direnv plugin
+
     ];
+    # roo code
+    # ext install rxliuli.joplin-vscode-plugin
+    # ext install dvirtz.parquet-viewer
+    # direnv plugin
+
     userSettings = {
       "yaml.format.enable" = true;
       "yaml.validate" = true;
       "editor.defaultFormatter" = "redhat.vscode-yaml";
       "editor.formatOnSave" = true;
       "bashIde.explainshellEndpoint" = "https://explainshell.com/"; # host explainshell if things are slower and useful
+      "python.languageServer" = "Pylance";
+      "editor.largeFileOptimizations" = false;
       "files.autoSave" = "afterDelay";
       "nix.enableLanguageServer" = true;
       "nix.serverPath" = "nil"; # or test with nixd
@@ -369,6 +378,9 @@ in
       # Browsers
       org.mozilla.firefox
       com.google.Chrome
+
+      # Communication
+      com.github.IsmaelMartinez.teams_for_linux
     )
     for app in "''${apps[@]}"; do
       flatpak install --user -y flathub "$app"
@@ -434,24 +446,24 @@ in
     ''
   );
 
-  systemd.user.services.open-webui = {
-    Unit = {
-      Description = "Open WebUI";
-      After = [ "network.target" ];
-    };
+  # systemd.user.services.open-webui = {
+  #   Unit = {
+  #     Description = "Open WebUI";
+  #     After = [ "network.target" ];
+  #   };
 
-    Service = {
-      ExecStart = "${pkgs.open-webui}/bin/open-webui serve --port 3000";
-      # Restart = "on-failure";
-      Environment = [
-        "OLLAMA_BASE_URL=http://localhost:11434"
-        "DATA_DIR=%h"
-      ];
-    };
+  #   Service = {
+  #     ExecStart = "${pkgs.open-webui}/bin/open-webui serve --port 3000";
+  #     # Restart = "on-failure";
+  #     Environment = [
+  #       "OLLAMA_BASE_URL=http://localhost:11434"
+  #       "DATA_DIR=%h"
+  #     ];
+  #   };
 
-    Install = {
-      WantedBy = [ "default.target" ];
-    };
-  };
+  #   Install = {
+  #     WantedBy = [ "default.target" ];
+  #   };
+  # };
 
 }
