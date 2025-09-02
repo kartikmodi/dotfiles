@@ -3,11 +3,11 @@
   package:
     state: present
     name:
-#      DWService
-#      https://www.dwservice.net/en/download.html
+      #      DWService
+      #      https://www.dwservice.net/en/download.html
       - xrdp # The rdp server which can share X.org session (new only else black screen) or current one with VNC by acting as a proxy
       - libvncserver1 # library for vnc
       - x11vnc # x11vnc -rfbport 5566  -display :0
       - freerdp2-shadow-x11 # for RDP server of current user - handful - not very popular -- can be connected with reminna /monitors:2 will show 2nd monitor cmd : freerdp-shadow-cli /monitors:0,2 -auth
-
+      - sshpass
 #  xrandr | grep ' connected' # to show connected monitors

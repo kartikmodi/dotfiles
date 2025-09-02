@@ -1,0 +1,57 @@
+---
+- name: Configure OpenSSH
+  block:
+    - name: Install OpenSSH server
+      apt:
+        name: openssh-server
+        state: present
+
+    - name: Ensure SSH service is enabled and started
+      service:
+        name: ssh
+        state: started
+        enabled: yes
+
+- name: Configure Cloudflare
+  block:
+    - name: Download repository GPG key
+      ansible.builtin.get_url:
+        url: https://pkg.cloudflare.com/cloudflare-main.gpg
+        dest: /usr/share/keyrings/cloudflare-main.gpg
+
+    - name: Add Cloudflare apt repository
+      apt_repository:
+        repo: "deb [signed-by=/usr/share/keyrings/cloudflare-main.gpg] https://pkg.cloudflare.com/cloudflared bookworm main"
+        state: present
+        filename: cloudflare
+        update_cache: yes
+
+    - name: Install cloudflared
+      apt:
+        name: cloudflared
+        state: present
+
+- name: Configure Tailscale
+  block:
+    - name: Add Tailscale GPG key
+      ansible.builtin.get_url:
+        url: https://pkgs.tailscale.com/stable/debian/bookworm.noarmor.gpg
+        dest: /usr/share/keyrings/tailscale-archive-keyring.gpg
+
+    - name: Add Tailscale apt repository
+      apt_repository:
+        repo: "deb [signed-by=/usr/share/keyrings/tailscale-archive-keyring.gpg] https://pkgs.tailscale.com/stable/debian bookworm main"
+        state: present
+        filename: tailscale
+        update_cache: yes
+
+    - name: Install Tailscale
+      apt:
+        name: tailscale
+        state: present
+
+    - name: Ensure Tailscale service is enabled and started
+      systemd:
+        name: tailscaled
+        enabled: yes
+        state: started

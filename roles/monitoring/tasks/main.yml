@@ -1,0 +1,6 @@
+---
+# Monitoring tools role tasks
+
+- name: Placeholder task for monitoring role
+  debug:
+    msg: "Monitoring role placeholder"

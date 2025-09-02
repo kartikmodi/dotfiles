@@ -1,0 +1,6 @@
+---
+# Productivity tools role tasks
+
+- name: Placeholder task for productivity role
+  debug:
+    msg: "Productivity role placeholder"

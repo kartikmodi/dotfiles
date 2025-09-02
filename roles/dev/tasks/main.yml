@@ -1,0 +1,6 @@
+---
+# Development tools role tasks
+
+- name: Placeholder task for dev role
+  debug:
+    msg: "Dev role placeholder"

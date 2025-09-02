@@ -1,33 +1,41 @@
 ---
-# tasks to complete before running roles
-- hosts: localhost
-  tags: always
-  become: true
-  #  connection: local
-  pre_tasks:
-    - name: pre-run | update apt cache
-      tags: always
-      apt: update_cache=yes
-      changed_when: False
+- hosts: all
+  tasks:
+    - name: Update apt cache
+      apt:
+        update_cache: yes
+      become: true
+      when: ansible_os_family == "Debian"
 
-# run roles
-- hosts: localhost
-  tags: root_user
+- hosts: all
+  roles:
+    - common
+
+- hosts: laptops,desktops
+  roles:
+    - dev
+    - productivity
+
+- hosts: desktops
+  roles:
+    - remote
+
+- hosts: servers
   become: true
   roles:
-    - root_user
+    - remote
     - geerlingguy.docker
-
+    - k3s.orchestration.k3s_server
   vars:
     docker_users:
       - "workstation"
+    k3s_version: "v1.33.4+k3s1"
 
-# - hosts: vm
-#   become: true
-#   roles: 
-#   - k3s-io.k3s-ansible.k3s-server
+- hosts: vms
+  roles:
+    - remote
+    - monitoring
 
-# - hosts: nas
-#   become: true
-#   roles: 
-#   - k3s-io.k3s-ansible.k3s-server
+- hosts: nas
+  roles:
+    - truenas

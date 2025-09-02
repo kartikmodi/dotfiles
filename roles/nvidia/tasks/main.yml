@@ -1,0 +1,6 @@
+---
+# NVIDIA role tasks
+
+- name: Placeholder task for nvidia role
+  debug:
+    msg: "NVIDIA role placeholder"

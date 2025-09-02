@@ -1,0 +1,15 @@
+---
+
+
+
+- name: Ensure common packages are installed
+  package:
+    name:
+      - curl
+      - wget
+      - vim
+      - htop
+      - git
+      - unzip
+    state: present
+  become: true

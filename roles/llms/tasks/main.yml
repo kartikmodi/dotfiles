@@ -1,0 +1,6 @@
+---
+# LLMs role tasks
+
+- name: Placeholder task for llms role
+  debug:
+    msg: "LLMs role placeholder"
