@@ -1,0 +1,74 @@
+all:
+  vars:
+    ansible_user: workstation
+    server_group: "{{ inventory_hostname }}"
+    ansible_port: 22
+    k3s_version: v1.33.4+k3s1
+
+  children:
+    laptops:
+      hosts:
+        p1:
+          ansible_host: p1.modi.local
+        mbp:
+          ansible_host: mbp.modi.local
+    desktops:
+      hosts:
+        core:
+          ansible_host: core.modi.local
+        studio:
+          ansible_host: studio.modi.local
+    vms:
+      hosts:
+        nas:
+          ansible_host: nas.modi.local
+        ai:
+          ansible_host: nas.modi.local
+        k8s:
+          ansible_host: nas.modi.local
+        win:
+          ansible_host: nas.modi.local
+    virt:
+      children:
+        server:
+          hosts:
+            virt: {}
+        # agent:
+        #   hosts:
+        #     virt: {}
+
+    nvr1:
+      children:
+        server:
+          hosts:
+            nvr1: {}
+        agent:
+          hosts:
+            nvr1: {}
+
+    nvr2:
+      children:
+        server:
+          hosts:
+            nvr2: {}
+        agent:
+          hosts:
+            nvr2: {}
+
+    servers:
+      hosts:
+        virt:
+          ansible_host: virt.local
+        nvr1:
+          ansible_host: nvr1.modi.local
+        nvr2:
+          ansible_host: nvr2.modi.local
+    # virt:
+    #   hosts:
+    #     virt: {}
+    # nvr1:
+    #   hosts:
+    #     nvr1: {}
+    # nvr2:
+    #   hosts:
+    #     nvr2: {}

@@ -11,5 +11,6 @@
       - htop
       - git
       - unzip
+      - apt-transport-https
     state: present
   become: true

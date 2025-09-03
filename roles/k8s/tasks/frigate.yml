@@ -1,0 +1,20 @@
+--- 
+ - name: Ensure Helm repo for Frigate exists
+   community.kubernetes.helm_repository:
+     name: blakeblackshear
+     repo_url: "https://blakeblackshear.github.io/blakeshome-charts/"
+
+ - name: Copy values.yaml to the host
+   copy:
+     src: ./frigate_values.yaml
+     dest: ~/frigate_values.yaml
+
+ - name: Deploy/upgrade Frigate Helm chart
+   community.kubernetes.helm:
+     name: my-frigate-release
+     chart_ref: blakeblackshear/frigate
+     release_namespace: frigate
+     create_namespace: true
+     values_files:
+       - ~/frigate_values.yaml
+ 

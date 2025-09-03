@@ -15,6 +15,7 @@
   roles:
     - dev
     - productivity
+    - geerlingguy.docker
 
 - hosts: desktops
   roles:
@@ -24,7 +25,7 @@
   become: true
   roles:
     - remote
-    - geerlingguy.docker
+    - k8s
     - k3s.orchestration.k3s_server
   vars:
     docker_users:
@@ -35,7 +36,3 @@
   roles:
     - remote
     - monitoring
-
-- hosts: nas
-  roles:
-    - truenas

@@ -1,0 +1,5 @@
+- import_tasks: install_virt.yml
+- import_tasks: proxmox.yml
+  when: inventory_hostname == "virt"
+
+  

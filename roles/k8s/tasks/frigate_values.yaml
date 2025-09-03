@@ -1,0 +1,14 @@
+- config: |
+  mqtt:
+    host: "mqtt.example.com"
+    port: 1883
+    user: admin
+    password: "{{ mqtt_password }}"
+  cameras:
+    # Define at least one camera
+    back:
+      ffmpeg:
+        inputs:
+          - path: rtsp://viewer:{{ frigate_rtsp_password }}@10.0.10.10:554/cam/realmonitor?channel=1&subtype=2
+            roles:
+              - detect

@@ -8,4 +8,4 @@ if [ "$#" -ne 1 ]; then
 fi
 
 # Run ansible playbook
-ansible-playbook -i /home/workstation/dotfiles/hosts.ini main.yml --verbose --ask-pass --limit "$1"
+ansible-playbook -i /home/workstation/dotfiles/inventory.yml main.yml --verbose --ask-pass --limit "$1"

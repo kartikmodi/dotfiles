@@ -1,6 +1,0 @@
----
-# TrueNAS role tasks
-
-- name: Placeholder task for truenas role
-  debug:
-    msg: "TrueNAS role placeholder"
