@@ -4,3 +4,4 @@ roles/geerlingguy.docker
 .lock
 settings.json
 collections
+.env
