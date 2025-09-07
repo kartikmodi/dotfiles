@@ -33,9 +33,9 @@ all:
         server:
           hosts:
             virt: {}
-        # agent:
-        #   hosts:
-        #     virt: {}
+        agent:
+          hosts:
+            virt: {}
 
     nvr1:
       children:

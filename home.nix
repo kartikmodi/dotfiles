@@ -381,6 +381,9 @@ in
 
       # Communication
       com.github.IsmaelMartinez.teams_for_linux
+
+      # rustdesk
+      # 
     )
     for app in "''${apps[@]}"; do
       flatpak install --user -y flathub "$app"
