@@ -1,14 +1,16 @@
-- config: |
+persistence:
+  config:
+    ephemeralWritableConfigYaml: true
+
+# values.yaml
+config: |
   mqtt:
-    host: "mqtt.example.com"
-    port: 1883
-    user: admin
-    password: "{{ mqtt_password }}"
+    enabled: False
+
   cameras:
-    # Define at least one camera
-    back:
+    cam1:
       ffmpeg:
         inputs:
-          - path: rtsp://viewer:{{ frigate_rtsp_password }}@10.0.10.10:554/cam/realmonitor?channel=1&subtype=2
+          - path: rtsp://XXXXXXXX:XXXXXXXX@192.168.X.X:554/cam/realmonitor?channel=1&subtype=0
             roles:
               - detect

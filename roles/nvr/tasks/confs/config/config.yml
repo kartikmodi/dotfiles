@@ -1,0 +1,14 @@
+mqtt:
+  enabled: False
+
+cameras:
+  cam1:
+    ffmpeg:
+      inputs:
+        - path: rtsp://{FRIGATE_RTSP_USER}:{FRIGATE_RTSP_PASSWORD}@{FRIGATE_CAM1_IP}:554/cam/realmonitor?channel=1&subtype=0
+          roles:
+            - detect
+    detect:
+      enabled: False # <---- disable detection until you have a working camera feed
+      width: 1280
+      height: 720

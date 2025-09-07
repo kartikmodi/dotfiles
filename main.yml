@@ -25,8 +25,9 @@
   become: true
   roles:
     - remote
-    - k8s
-    - k3s.orchestration.k3s_server
+    - nvr
+    # - k8s
+    # - k3s.orchestration.k3s_server
   vars:
     docker_users:
       - "workstation"

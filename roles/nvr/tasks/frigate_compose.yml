@@ -1,0 +1,14 @@
+- name: Ensure project directory structure exists
+  file:
+    path: /home/workstation/frigate/config
+    state: directory
+
+- name: Copy confs
+  copy:
+    src: ./confs/
+    dest: /home/workstation/frigate
+
+- name: Run docker compose up
+  command: docker compose -f /home/workstation/frigate/docker-compose.yml up -d
+  args:
+    chdir: /home/workstation/frigate
