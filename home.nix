@@ -11,7 +11,7 @@ let
   venvsDir = "${homeDir}/.venvs";
   globalEnvPath = "${venvsDir}/global";
   uvBin = "${pkgs.uv}/bin/uv";
-
+  npmBin = "${pkgs.nodejs}/bin/npm";
 in
 
 {
@@ -50,7 +50,7 @@ in
     # dev
     # drawio
     postgresql
-    mongodb
+    # mongodb
     nodejs
     clickhouse
     clickhouse-cli
@@ -71,6 +71,7 @@ in
     kitty
     zellij
     wezterm
+    gnupg
     awscli2
     aws-vault
     parquet-tools
@@ -120,7 +121,7 @@ in
 
     # multimedia
     gimp3-with-plugins
-    openshot-qt
+    # openshot-qt
     vlc
     # stremio
 
@@ -193,17 +194,6 @@ in
 
   ];
   home.stateVersion = "25.05";
-  #  home.sessionVariables = {
-  #   LIBVA_DRIVER_NAME = "i965";
-  # VDPAU_DRIVER = "va_gl";
-  #  __GLX_VENDOR_LIBRARY_NAME = "mesa";
-  # GBM_DRIVERS_PATH = "/usr/lib/x86_64-linux-gnu/dri";
-  # LIBVA_DRIVERS_PATH = "/usr/lib/x86_64-linux-gnu/dri";
-  # LD_LIBRARY_PATH = "/usr/lib/x86_64-linux-gnu:/lib/x86_64-linux-gnu";
-  # GTK_PATH = "${pkgs.libsForQt5.kde-gtk-config}/lib/gtk-3.0";
-  # GTK_MODULES = "colorreload-gtk-module:window-decorations-gtk-module";
-
-  #};
   programs.vscode = {
     enable = true;
     package = pkgs.vscode;
@@ -307,6 +297,7 @@ in
     #   vim-plug
     # ];
   };
+  home.file.".npmrc".text = "prefix = \${homeDir}/.npm-global";
   home.file.".profile" = {
     enable = true;
     text = ''
@@ -352,11 +343,17 @@ in
       # if [ -d "$HOME/.nix-profile/share" ] ; then
        #  export XDG_DATA_DIRS="$XDG_DATA_DIRS:$HOME/.nix-profile/share"
        #fi
+
+       # set PATH for npm global binaries
+       if [ -d "$HOME/.npm-global/bin" ] ; then
+         PATH="$HOME/.npm-global/bin:$PATH"
+       fi
+
     '';
   };
 
   home.activation.flatpakSetup = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
-    flatpak remote-add --user --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
+    /usr/bin/flatpak remote-add --user --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo || true
   '';
 
   home.activation.flatpakApps = lib.hm.dag.entryAfter [ "flatpakSetup" ] ''
@@ -386,20 +383,16 @@ in
       # 
     )
     for app in "''${apps[@]}"; do
-      flatpak install --user -y flathub "$app"
+      /usr/bin/flatpak install --user -y flathub "$app"
     done
   '';
 
-  home.activation.createUvEnvs = lib.hm.dag.entryAfter [ "flatpakSetup" ] ''
-    if [ ! -f "${globalEnvPath}" ]; then
+  home.activation.setupUvEnvs = lib.hm.dag.entryAfter [ "flatpakSetup" ] ''
+    if [ ! -d "${globalEnvPath}" ]; then
       mkdir -p ${globalEnvPath}
       ${uvBin} venv ${globalEnvPath}
-      
     fi
 
-  '';
-
-  home.activation.updateUvEnvs = lib.hm.dag.entryAfter [ "createUvEnvs" ] ''
     whls=(
       # AI
       huggingface_hub[cli]
@@ -443,30 +436,19 @@ in
       ${lib.concatStringsSep "\n" (
         lib.mapAttrsToList (filename: url: ''
           echo "→ Downloading ${filename}..."
-          curl -fsSL "${url}" -o ${pluginDir}/${filename}.jpl
+          ${pkgs.curlFull}/bin/curl -fsSL "${url}" -o ${pluginDir}/${filename}.jpl
         '') jplPlugins
       )}
     ''
   );
 
-  # systemd.user.services.open-webui = {
-  #   Unit = {
-  #     Description = "Open WebUI";
-  #     After = [ "network.target" ];
-  #   };
-
-  #   Service = {
-  #     ExecStart = "${pkgs.open-webui}/bin/open-webui serve --port 3000";
-  #     # Restart = "on-failure";
-  #     Environment = [
-  #       "OLLAMA_BASE_URL=http://localhost:11434"
-  #       "DATA_DIR=%h"
-  #     ];
-  #   };
-
-  #   Install = {
-  #     WantedBy = [ "default.target" ];
-  #   };
-  # };
+  home.activation.installNpmPackages = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+    echo "📦 Installing Global NPM Packages..."
+    if [ ! -d ${homeDir}/.npm-global ]; then
+      mkdir -p ${homeDir}/.npm-global
+    fi
+    export PATH="${pkgs.nodejs}/bin:$PATH"
+    ${npmBin} install -g --prefix ${homeDir}/.npm-global @google/gemini-cli
+  '';
 
 }
