@@ -18,6 +18,6 @@ curl -fsSL https://install.determinate.systems/nix | sh -s -- install --determin
 sudo apt install flatpak ansible
 
 # run after installing flatpak
-sudo flatpak remote-add --user --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
+flatpak remote-add --user --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
 
 flatpak --user -y install flathub com.brave.Browser
