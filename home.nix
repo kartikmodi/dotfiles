@@ -39,6 +39,7 @@ in
 
     #hardware
     solaar
+    htop
     # cudatoolkit
 
     # nix
@@ -48,6 +49,9 @@ in
     nil
 
     # dev
+    gh
+    github-desktop
+
     # drawio
     postgresql
     # mongodb
@@ -72,17 +76,18 @@ in
     zellij
     wezterm
     gnupg
+    gpgme
     awscli2
     aws-vault
     parquet-tools
     arrow-cpp
 
     # AI
-    n8n
-    lmstudio
+    # n8n
+    # lmstudio
     # ollama-cuda
     # open-webui
-    librechat
+    # librechat
 
     warp-terminal
     # chatbox # desktop app, android also available
@@ -93,12 +98,12 @@ in
     # text-generation-webui
 
     # Version and environment managers
-    asdf-vm
+    # asdf-vm
     uv
-    mise
+    # mise
 
     # cloud storage
-    pcloud
+    # pcloud # not available for aarch64
     # dropbox
     #cozy-drive
     #rclone
@@ -106,11 +111,11 @@ in
     # megasync
 
     # communication
-    zoom-us
-    slack
+    # zoom-us # not available for aarch64
+    # slack # not available for aarch64-linux
 
     # security
-    bitwarden-desktop
+    # bitwarden-desktop
     # _1password
     # _1password-gui
 
@@ -123,7 +128,7 @@ in
     gimp3-with-plugins
     # openshot-qt
     vlc
-    # stremio
+    # stremio # requires qtwebengine (long build on aarch64)
 
     # obs-plugins
     obs-studio
@@ -140,11 +145,11 @@ in
     hollywood
 
     # notes
-    joplin-desktop
+    # joplin-desktop
 
     # productivity
-    qalculate-qt
-    pdfsam-basic
+    # qalculate-qt #may require qtwebengine
+    # pdfsam-basic # not available for aarch64
     flameshot
 
     # gaming
@@ -193,11 +198,12 @@ in
     # cloud flare tunnel
 
   ];
-  home.stateVersion = "25.05";
+  home.stateVersion = "25.11";
+
   programs.vscode = {
     enable = true;
     package = pkgs.vscode;
-    extensions = with pkgs.vscode-extensions; [
+    profiles.default.extensions = with pkgs.vscode-extensions; [
       jnoortheen.nix-ide
       timonwong.shellcheck
       foxundermoon.shell-format
@@ -208,7 +214,7 @@ in
       redhat.vscode-yaml
       ms-vscode-remote.remote-ssh
       ms-vscode-remote.remote-ssh-edit
-      saoudrizwan.claude-dev
+      # saoudrizwan.claude-dev # cline
 
     ];
     # roo code
@@ -216,7 +222,7 @@ in
     # ext install dvirtz.parquet-viewer
     # direnv plugin
 
-    userSettings = {
+    profiles.default.userSettings = {
       "yaml.format.enable" = true;
       "yaml.validate" = true;
       "editor.defaultFormatter" = "redhat.vscode-yaml";
@@ -297,97 +303,93 @@ in
     #   vim-plug
     # ];
   };
-  home.file.".npmrc".text = "prefix = \${homeDir}/.npm-global";
-  home.file.".profile" = {
-    enable = true;
-    text = ''
-       # ~/.profile: executed by the command interpreter for login shells.
-       # This file is not read by bash(1), if ~/.bash_profile or ~/.bash_login
-       # exists.
-       # see /usr/share/doc/bash/examples/startup-files for examples.
-       # the files are located in the bash-doc package.
+  # home.file.".npmrc".text = "prefix = ${homeDir}/.npm-global";
+  # home.file.".profile" = {
+  #   enable = true;
+  #   text = ''
+  #      # ~/.profile: executed by the command interpreter for login shells.
+  #      # This file is not read by bash(1), if ~/.bash_profile or ~/.bash_login
+  #      # exists.
+  #      # see /usr/share/doc/bash/examples/startup-files for examples.
+  #      # the files are located in the bash-doc package.
 
-       # the default umask is set in /etc/profile; for setting the umask
-       # for ssh logins, install and configure the libpam-umask package.
-       #umask 022
+  #      # the default umask is set in /etc/profile; for setting the umask
+  #      # for ssh logins, install and configure the libpam-umask package.
+  #      #umask 022
 
-       # if running bash
-       if [ -n "$BASH_VERSION" ]; then
-           # include .bashrc if it exists
-           if [ -f "$HOME/.bashrc" ]; then
-               . "$HOME/.bashrc"
-           fi
-       fi
+  #      # if running bash
+  #      if [ -n "$BASH_VERSION" ]; then
+  #          # include .bashrc if it exists
+  #          if [ -f "$HOME/.bashrc" ]; then
+  #              . "$HOME/.bashrc"
+  #          fi
+  #      fi
 
-       # set PATH so it includes user's private bin if it exists
-       if [ -d "$HOME/bin" ] ; then
-           PATH="$HOME/bin:$PATH"
-       fi
+  #      # set PATH so it includes user's private bin if it exists
+  #      if [ -d "$HOME/bin" ] ; then
+  #          PATH="$HOME/bin:$PATH"
+  #      fi
 
-       # set PATH so it includes user's private bin if it exists
-       if [ -d "$HOME/.local/bin" ] ; then
-           PATH="$HOME/.local/bin:$PATH"
-       fi
+  #      # set PATH so it includes user's private bin if it exists
+  #      if [ -d "$HOME/.local/bin" ] ; then
+  #          PATH="$HOME/.local/bin:$PATH"
+  #      fi
 
-       # set PATH for nix profile binaries
-       if [ -d "$HOME/.nix-profile/bin" ] ; then
-         PATH="$HOME/.nix-profile/bin:$PATH"
-       fi
+  #      # set PATH for nix profile binaries
+  #      if [ -d "$HOME/.nix-profile/bin" ] ; then
+  #        PATH="$HOME/.nix-profile/bin:$PATH"
+  #      fi
 
-       # set PATH for global uv binaries
-       if [ -d "${globalEnvPath}/bin" ] ; then
-         PATH="${globalEnvPath}/bin:$PATH"
-       fi
+  #      # set PATH for global uv binaries
+  #      if [ -d "${globalEnvPath}/bin" ] ; then
+  #        PATH="${globalEnvPath}/bin:$PATH"
+  #      fi
 
-       # Add /custom/share to XDG_DATA_DIRS
-      # if [ -d "$HOME/.nix-profile/share" ] ; then
-       #  export XDG_DATA_DIRS="$XDG_DATA_DIRS:$HOME/.nix-profile/share"
-       #fi
+  #      # Add /custom/share to XDG_DATA_DIRS
+  #     # if [ -d "$HOME/.nix-profile/share" ] ; then
+  #      #  export XDG_DATA_DIRS="$XDG_DATA_DIRS:$HOME/.nix-profile/share"
+  #      #fi
 
-       # set PATH for npm global binaries
-       if [ -d "$HOME/.npm-global/bin" ] ; then
-         PATH="$HOME/.npm-global/bin:$PATH"
-       fi
+  #      # set PATH for npm global binaries
+  #      if [ -d "$HOME/.npm-global/bin" ] ; then
+  #        PATH="$HOME/.npm-global/bin:$PATH"
+  #      fi
 
-    '';
-  };
+  #   '';
+  # };
 
-  home.activation.flatpakSetup = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
-    /usr/bin/flatpak remote-add --user --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo || true
-  '';
+  # home.activation.flatpakSetup = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+  #   DISPLAY=:0 /usr/bin/flatpak --verbose remote-add --user --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo || true
+  # '';
 
-  home.activation.flatpakApps = lib.hm.dag.entryAfter [ "flatpakSetup" ] ''
-      apps=(
-      # AI
-      io.github.qwersyk.Newelle
-      com.jeffser.Alpaca
-      io.gitlab.theevilskeleton.Upscaler
-      io.gpt4all.gpt4all
-      com.cherry_ai.CherryStudio
+  # home.activation.flatpakApps = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+  #     apps=(
+  #     # AI
+  #     # io.github.qwersyk.Newelle
+  #     # com.jeffser.Alpaca
+  #     # io.gitlab.theevilskeleton.Upscaler
+  #     # io.gpt4all.gpt4all
+  #     # com.cherry_ai.CherryStudio
 
-      # Productivity
-      io.github.Qalculate.qalculate-qt
+  #     # Productivity
+  #     io.github.Qalculate.qalculate-qt
 
-      # Files
-      io.kapsa.drive
-      com.hunterwittenborn.Celeste
+  #     # Files
+  #     io.kapsa.drive
+  #     com.hunterwittenborn.Celeste
 
-      # Browsers
-      org.mozilla.firefox
-      com.google.Chrome
+  #     # Communication
+  #     com.github.IsmaelMartinez.teams_for_linux
 
-      # Communication
-      com.github.IsmaelMartinez.teams_for_linux
+  #     # rustdesk
 
-      # rustdesk
-      # 
-    )
-    for app in "''${apps[@]}"; do
-      /usr/bin/flatpak install --user -y flathub "$app"
-    done
-  '';
+  #   )
+  #   for app in "''${apps[@]}"; do
+  #     /usr/bin/flatpak install --user -y flathub "$app"
+  #   done
+  # '';
 
-  home.activation.setupUvEnvs = lib.hm.dag.entryAfter [ "flatpakSetup" ] ''
+  home.activation.setupUvEnvs = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
     if [ ! -d "${globalEnvPath}" ]; then
       mkdir -p ${globalEnvPath}
       ${uvBin} venv ${globalEnvPath}
@@ -395,8 +397,8 @@ in
 
     whls=(
       # AI
-      huggingface_hub[cli]
-      nvitop
+      # huggingface_hub[cli]
+      # nvitop
       gpustat
 
       # DB
@@ -407,48 +409,48 @@ in
     done
   '';
 
-  home.activation.joplinPlugins = lib.hm.dag.entryAfter [ "writeBoundary" ] (
-    let
-      pluginDir = "~/.config/joplin-desktop/plugins";
+  # home.activation.joplinPlugins = lib.hm.dag.entryAfter [ "writeBoundary" ] (
+  #   let
+  #     pluginDir = "${homeDir}/.config/joplin-desktop/plugins";
 
-      jplPlugins = {
-        "joplin.plugin.alondmnt.jarvis" =
-          "https://github.com/joplin/plugins/raw/master/plugins/joplin.plugin.alondmnt.jarvis/plugin.jpl";
+  #     jplPlugins = {
+  #       "joplin.plugin.alondmnt.jarvis" =
+  #         "https://github.com/joplin/plugins/raw/master/plugins/joplin.plugin.alondmnt.jarvis/plugin.jpl";
 
-        "home.sword.NoteLLM" =
-          "https://github.com/joplin/plugins/raw/master/plugins/home.sword.NoteLLM/plugin.jpl";
+  #       "home.sword.NoteLLM" =
+  #         "https://github.com/joplin/plugins/raw/master/plugins/home.sword.NoteLLM/plugin.jpl";
 
-        "joplin.plugin.note.tabs" =
-          "https://github.com/joplin/plugins/raw/master/plugins/joplin.plugin.note.tabs/plugin.jpl";
+  #       "joplin.plugin.note.tabs" =
+  #         "https://github.com/joplin/plugins/raw/master/plugins/joplin.plugin.note.tabs/plugin.jpl";
 
-        "org.otherware.joplin-publish" =
-          "https://github.com/joplin/plugins/raw/master/plugins/org.otherware.joplin-publish/plugin.jpl";
+  #       "org.otherware.joplin-publish" =
+  #         "https://github.com/joplin/plugins/raw/master/plugins/org.otherware.joplin-publish/plugin.jpl";
 
-        "plugin.calebjohn.rich-markdown" =
-          "https://github.com/joplin/plugins/raw/master/plugins/plugin.calebjohn.rich-markdown/plugin.jpl";
-      };
-    in
-    ''
-      echo "📦 Installing Joplin plugins (.jpl files)..."
+  #       "plugin.calebjohn.rich-markdown" =
+  #         "https://github.com/joplin/plugins/raw/master/plugins/plugin.calebjohn.rich-markdown/plugin.jpl";
+  #     };
+  #   in
+  #   ''
+  #     echo "📦 Installing Joplin plugins (.jpl files)..."
 
-      mkdir -p ${pluginDir}
+  #     mkdir -p ${pluginDir}
 
-      ${lib.concatStringsSep "\n" (
-        lib.mapAttrsToList (filename: url: ''
-          echo "→ Downloading ${filename}..."
-          ${pkgs.curlFull}/bin/curl -fsSL "${url}" -o ${pluginDir}/${filename}.jpl
-        '') jplPlugins
-      )}
-    ''
-  );
+  #     ${lib.concatStringsSep "\n" (
+  #       lib.mapAttrsToList (filename: url: ''
+  #         echo "→ Downloading ${filename}..."
+  #         ${pkgs.curlFull}/bin/curl -fsSL "${url}" -o ${pluginDir}/${filename}.jpl
+  #       '') jplPlugins
+  #     )}
+  #   ''
+  # );
 
-  home.activation.installNpmPackages = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
-    echo "📦 Installing Global NPM Packages..."
-    if [ ! -d ${homeDir}/.npm-global ]; then
-      mkdir -p ${homeDir}/.npm-global
-    fi
-    export PATH="${pkgs.nodejs}/bin:$PATH"
-    ${npmBin} install -g --prefix ${homeDir}/.npm-global @google/gemini-cli
-  '';
+  # home.activation.installNpmPackages = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+  #   echo "📦 Installing Global NPM Packages..."
+  #   if [ ! -d ${homeDir}/.npm-global ]; then
+  #     mkdir -p ${homeDir}/.npm-global
+  #   fi
+  #   export PATH="${pkgs.nodejs}/bin:$PATH"
+  #   ${npmBin} install -g --prefix ${homeDir}/.npm-global @google/gemini-cli
+  # '';
 
 }
