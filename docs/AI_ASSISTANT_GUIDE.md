@@ -152,10 +152,10 @@ Python, JavaScript, and Go. Use modern plugin managers like lazy.nvim.
 
 ## What I Cannot Do
 
-- I cannot push directly to your repository (I work via Pull Requests)
 - I cannot access external services or APIs during execution
 - I cannot make changes to your live system (only to repository files)
 - I cannot access private credentials or secrets
+- I cannot execute commands with destructive side effects outside the repository
 
 ## Getting Started
 
