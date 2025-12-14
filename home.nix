@@ -51,8 +51,9 @@ in
     # dev
     gh
     github-desktop
+    github-copilot-cli
 
-    # drawio
+    drawio
     postgresql
     # mongodb
     nodejs
@@ -89,7 +90,7 @@ in
     # open-webui
     # librechat
 
-    warp-terminal
+    # warp-terminal
     # chatbox # desktop app, android also available
     # private-gpt
     # streamlit
@@ -115,9 +116,9 @@ in
     # slack # not available for aarch64-linux
 
     # security
-    # bitwarden-desktop
-    # _1password
-    # _1password-gui
+    bitwarden-desktop
+    _1password-cli
+    _1password-gui
 
     # browsers
     #google-chrome
@@ -141,11 +142,11 @@ in
     #tailscale
 
     # terminal
-    # byobu # tmux
+    byobu # tmux
     hollywood
 
     # notes
-    # joplin-desktop
+    joplin-desktop
 
     # productivity
     # qalculate-qt #may require qtwebengine
@@ -227,6 +228,7 @@ in
       "yaml.validate" = true;
       "editor.defaultFormatter" = "redhat.vscode-yaml";
       "editor.formatOnSave" = true;
+      "editor.formatOnSaveMode" = "file";
       "bashIde.explainshellEndpoint" = "https://explainshell.com/"; # host explainshell if things are slower and useful
       "python.languageServer" = "Pylance";
       "editor.largeFileOptimizations" = false;
