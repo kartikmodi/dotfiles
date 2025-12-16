@@ -116,6 +116,7 @@ in
     # slack # not available for aarch64-linux
 
     # security
+    bitwarden-cli
     bitwarden-desktop
     _1password-cli
     _1password-gui
