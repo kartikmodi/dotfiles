@@ -15,4 +15,4 @@ sudo snapper -c root create --description "{enter description here}"
 
 sudo widevine-installer
 
-sudo  titdb -d /dev/input/event0
+sudo titdb -d /dev/input/event0

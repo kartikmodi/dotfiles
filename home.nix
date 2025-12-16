@@ -367,6 +367,9 @@ in
 
   # home.activation.flatpakApps = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
   #     apps=(
+  # Browsers
+  # com.brave.Browser
+
   #     # AI
   #     # io.github.qwersyk.Newelle
   #     # com.jeffser.Alpaca
@@ -400,9 +403,9 @@ in
 
     whls=(
       # AI
-      # huggingface_hub[cli]
+      huggingface_hub[cli]
       # nvitop
-      gpustat
+      # gpustat
 
       # DB
       # duckdb
