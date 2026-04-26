@@ -74,7 +74,7 @@ in
     # nix-direnv
     alacritty
     kitty
-    zellij
+    # zellij # fails to build currently: zellij 0.44.1 requires rustc 1.92
     wezterm
     gnupg
     gpgme
@@ -84,6 +84,11 @@ in
     arrow-cpp
 
     # AI
+    # mkdir .npm-global
+    # npm config set prefix ~/.npm-global
+    # PATH="$HOME/.npm-global/bin:$PATH"
+    # npm install -g @openai/codex
+    # npm install -g @google/gemini-cli
     # n8n
     # lmstudio
     # ollama-cuda
@@ -133,7 +138,7 @@ in
     # stremio # requires qtwebengine (long build on aarch64)
 
     # obs-plugins
-    obs-studio
+    # obs-studio # Failed to initialize video.  Your GPU may not be supported, or your graphics drivers may need to be updated.
     inkscape-with-extensions
     #kdePackages.kdenlive
     krita
@@ -148,6 +153,7 @@ in
 
     # notes
     joplin-desktop
+    obsidian
 
     # productivity
     # qalculate-qt #may require qtwebengine
@@ -169,6 +175,8 @@ in
     whois
     wireshark
     curlFull
+    # protonvpn-gui
+    mozillavpn # doesn't work some problem
 
     # files
     tree
@@ -199,8 +207,25 @@ in
 
     # cloud flare tunnel
 
+    antigravity-fhs
+    telegram-desktop
+    # configure nfs
+    # configure rsync pcloud
+    jira-cli-go
+    jiratui
+    # localsend # doesn't work
+    # pdfsam-basic
+    qalculate-qt
+    pdfarranger
+    # onlyoffice
+    super-productivity # older version available, look for other ways in future
+    # logseq
+    # obsidian
+
   ];
   home.stateVersion = "25.11";
+  #copilot plugin marketplace add obra/superpowers-marketplace
+  # gemini extensions install https://github.com/obra/superpowers
 
   programs.vscode = {
     enable = true;
@@ -216,6 +241,9 @@ in
       redhat.vscode-yaml
       ms-vscode-remote.remote-ssh
       ms-vscode-remote.remote-ssh-edit
+      redhat.java
+      hashicorp.terraform
+
       # saoudrizwan.claude-dev # cline
 
     ];
@@ -362,13 +390,14 @@ in
   # };
 
   # home.activation.flatpakSetup = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
-  #   DISPLAY=:0 /usr/bin/flatpak --verbose remote-add --user --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo || true
+  #   DISPLAY=:0 /usr/bin/flatpak --verbose remote-add --user --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo || true
   # '';
 
   # home.activation.flatpakApps = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
   #     apps=(
   # Browsers
-  # com.brave.Browser
+  # com.brave.Browser - Plasma Integration does not work
+  #  org.chromium.Chromium - Plasma integration works
 
   #     # AI
   #     # io.github.qwersyk.Newelle
@@ -376,9 +405,6 @@ in
   #     # io.gitlab.theevilskeleton.Upscaler
   #     # io.gpt4all.gpt4all
   #     # com.cherry_ai.CherryStudio
-
-  #     # Productivity
-  #     io.github.Qalculate.qalculate-qt
 
   #     # Files
   #     io.kapsa.drive
@@ -388,7 +414,8 @@ in
   #     com.github.IsmaelMartinez.teams_for_linux
 
   #     # rustdesk
-
+  #     # com.rustdesk.Rustdesk
+  # com.super_productivity.SuperProductivity
   #   )
   #   for app in "''${apps[@]}"; do
   #     /usr/bin/flatpak install --user -y flathub "$app"
@@ -412,6 +439,31 @@ in
     )
     for whl in "''${whls[@]}"; do
       ${uvBin} pip install -p ${globalEnvPath} -U "$whl"
+    done
+  '';
+
+  home.activation.installAntigravityExtensions = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+    echo "📦 Installing Antigravity Extensions..."
+    extensions=(
+      "golang.go"
+      "llvm-vs-code-extensions.vscode-clangd"
+      "meta.pyrefly"
+      "ms-python.debugpy"
+      "ms-python.python"
+      "ms-python.vscode-python-envs"
+      "redhat.java"
+      "shopify.ruby-lsp"
+      "vscjava.vscode-gradle"
+      "vscjava.vscode-java-debug"
+      "vscjava.vscode-java-dependency"
+      "vscjava.vscode-java-pack"
+      "vscjava.vscode-java-test"
+      "vscjava.vscode-maven"
+      "hashicorp.terraform"
+    )
+
+    for ext in "''${extensions[@]}"; do
+      ${pkgs.antigravity}/bin/antigravity --install-extension "$ext" 
     done
   '';
 
