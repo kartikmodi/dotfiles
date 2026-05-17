@@ -62,7 +62,7 @@ alias ssha='eval $(ssh-agent) && ssh-add'
 alias tn='tmux new -s'
 
 # Proxmox
-alias pve='ssh root@virt.modi.local pvesh'
+alias pve='ssh root@web.modi.local pvesh'
 
 # Package management
 if [ -f /usr/bin/dnf ]; then
