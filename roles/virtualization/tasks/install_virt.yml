@@ -8,6 +8,7 @@
       - bridge-utils
       - virtinst
       - cpu-checker
+      - fex
     state: present
 
 - name: Install virt-manager and its GUI components

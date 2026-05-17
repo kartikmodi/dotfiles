@@ -14,26 +14,23 @@
 - hosts: laptops,desktops
   roles:
     - dev
-    - productivity
-    - geerlingguy.docker
+
+- hosts: laptops
+  roles:
+    - virtualization
+    - containers
 
 - hosts: desktops
   roles:
     - remote
 
 - hosts: servers
-  become: true
+  become: true  
   roles:
-    - remote
-    - nvr
-    # - k8s
-    # - k3s.orchestration.k3s_server
-  vars:
-    docker_users:
-      - "workstation"
-    k3s_version: "v1.33.4+k3s1"
+    - monitoring
 
 - hosts: vms
   roles:
+    - containers
     - remote
     - monitoring

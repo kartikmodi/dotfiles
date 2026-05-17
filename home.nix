@@ -81,6 +81,7 @@ in
     awscli2
     aws-vault
     parquet-tools
+    avro-tools
     arrow-cpp
 
     # AI
@@ -154,6 +155,7 @@ in
     # notes
     joplin-desktop
     obsidian
+    logseq
 
     # productivity
     # qalculate-qt #may require qtwebengine

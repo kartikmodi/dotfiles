@@ -1,0 +1,38 @@
+---
+# Podman role — replaces Docker while keeping `docker` CLI compatibility
+# via podman-docker. To revert to Docker, comment this role out and
+# uncomment geerlingguy.docker in main.yml.
+
+- name: Install Podman and compatibility packages
+  apt:
+    name:
+      - podman
+      - podman-compose
+      - podman-docker        # provides /usr/bin/docker → podman symlink
+    state: present
+  become: true
+
+- name: Enable and start Podman socket (Docker API compat)
+  systemd:
+    name: podman.socket
+    enabled: yes
+    state: started
+    scope: user
+  # Runs as the ansible_user, not root — rootless Podman
+
+- name: Ensure DOCKER_HOST points to Podman socket
+  lineinfile:
+    path: "/home/{{ ansible_user }}/.bashrc"
+    line: 'export DOCKER_HOST=unix:///run/user/$(id -u)/podman/podman.sock'
+    regexp: '^export DOCKER_HOST='
+    state: present
+    create: yes
+
+- name: Verify podman is accessible as docker
+  command: docker --version
+  register: docker_compat_check
+  changed_when: false
+
+- name: Show compatibility check
+  debug:
+    msg: "{{ docker_compat_check.stdout }}"
