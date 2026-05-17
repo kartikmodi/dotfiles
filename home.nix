@@ -209,7 +209,7 @@ in
 
     # cloud flare tunnel
 
-    antigravity-fhs
+    # antigravity-fhs # older version, use dnf
     telegram-desktop
     # configure nfs
     # configure rsync pcloud
@@ -238,7 +238,7 @@ in
       foxundermoon.shell-format
       mads-hartmann.bash-ide-vscode
       ms-python.python
-      ms-python.vscode-pylance
+      # ms-python.vscode-pylance
       redhat.ansible
       redhat.vscode-yaml
       ms-vscode-remote.remote-ssh
@@ -337,59 +337,6 @@ in
     # ];
   };
   # home.file.".npmrc".text = "prefix = ${homeDir}/.npm-global";
-  # home.file.".profile" = {
-  #   enable = true;
-  #   text = ''
-  #      # ~/.profile: executed by the command interpreter for login shells.
-  #      # This file is not read by bash(1), if ~/.bash_profile or ~/.bash_login
-  #      # exists.
-  #      # see /usr/share/doc/bash/examples/startup-files for examples.
-  #      # the files are located in the bash-doc package.
-
-  #      # the default umask is set in /etc/profile; for setting the umask
-  #      # for ssh logins, install and configure the libpam-umask package.
-  #      #umask 022
-
-  #      # if running bash
-  #      if [ -n "$BASH_VERSION" ]; then
-  #          # include .bashrc if it exists
-  #          if [ -f "$HOME/.bashrc" ]; then
-  #              . "$HOME/.bashrc"
-  #          fi
-  #      fi
-
-  #      # set PATH so it includes user's private bin if it exists
-  #      if [ -d "$HOME/bin" ] ; then
-  #          PATH="$HOME/bin:$PATH"
-  #      fi
-
-  #      # set PATH so it includes user's private bin if it exists
-  #      if [ -d "$HOME/.local/bin" ] ; then
-  #          PATH="$HOME/.local/bin:$PATH"
-  #      fi
-
-  #      # set PATH for nix profile binaries
-  #      if [ -d "$HOME/.nix-profile/bin" ] ; then
-  #        PATH="$HOME/.nix-profile/bin:$PATH"
-  #      fi
-
-  #      # set PATH for global uv binaries
-  #      if [ -d "${globalEnvPath}/bin" ] ; then
-  #        PATH="${globalEnvPath}/bin:$PATH"
-  #      fi
-
-  #      # Add /custom/share to XDG_DATA_DIRS
-  #     # if [ -d "$HOME/.nix-profile/share" ] ; then
-  #      #  export XDG_DATA_DIRS="$XDG_DATA_DIRS:$HOME/.nix-profile/share"
-  #      #fi
-
-  #      # set PATH for npm global binaries
-  #      if [ -d "$HOME/.npm-global/bin" ] ; then
-  #        PATH="$HOME/.npm-global/bin:$PATH"
-  #      fi
-
-  #   '';
-  # };
 
   # home.activation.flatpakSetup = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
   #   DISPLAY=:0 /usr/bin/flatpak --verbose remote-add --user --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo || true
@@ -397,120 +344,101 @@ in
 
   # home.activation.flatpakApps = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
   #     apps=(
-  # Browsers
-  # com.brave.Browser - Plasma Integration does not work
+  # # Browsers
+  # # com.brave.Browser - Plasma Integration does not work
   #  org.chromium.Chromium - Plasma integration works
 
-  #     # AI
-  #     # io.github.qwersyk.Newelle
-  #     # com.jeffser.Alpaca
-  #     # io.gitlab.theevilskeleton.Upscaler
-  #     # io.gpt4all.gpt4all
-  #     # com.cherry_ai.CherryStudio
+  
+  # #     # AI
+  # #     # io.github.qwersyk.Newelle
+  # #     # com.jeffser.Alpaca
+  # #     # io.gitlab.theevilskeleton.Upscaler
+  # #     # io.gpt4all.gpt4all
+  # #     # com.cherry_ai.CherryStudio
 
-  #     # Files
-  #     io.kapsa.drive
-  #     com.hunterwittenborn.Celeste
+  # #     # Files
+  # #     io.kapsa.drive
+  # #     com.hunterwittenborn.Celeste
+  #  org.localsend.localsend_app
+  # #     # Communication
+  # #     com.github.IsmaelMartinez.teams_for_linux
 
-  #     # Communication
-  #     com.github.IsmaelMartinez.teams_for_linux
-
-  #     # rustdesk
-  #     # com.rustdesk.Rustdesk
-  # com.super_productivity.SuperProductivity
+  # #     # rustdesk
+  # #     # com.rustdesk.Rustdesk
   #   )
   #   for app in "''${apps[@]}"; do
   #     /usr/bin/flatpak install --user -y flathub "$app"
   #   done
   # '';
 
-  home.activation.setupUvEnvs = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
-    if [ ! -d "${globalEnvPath}" ]; then
-      mkdir -p ${globalEnvPath}
-      ${uvBin} venv ${globalEnvPath}
-    fi
+  # home.activation.setupUvEnvs = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+  #   if [ ! -d "${globalEnvPath}" ]; then
+  #     mkdir -p ${globalEnvPath}
+  #     ${uvBin} venv ${globalEnvPath}
+  #   fi
 
-    whls=(
-      # AI
-      huggingface_hub[cli]
-      # nvitop
-      # gpustat
+  #   whls=(
+  #     # AI
+  #     huggingface_hub[cli]
+  #     # nvitop
+  #     # gpustat
 
-      # DB
-      # duckdb
-    )
-    for whl in "''${whls[@]}"; do
-      ${uvBin} pip install -p ${globalEnvPath} -U "$whl"
-    done
-  '';
+  #     # DB
+  #     # duckdb
+  #   )
+  #   for whl in "''${whls[@]}"; do
+  #     ${uvBin} pip install -p ${globalEnvPath} -U "$whl"
+  #   done
+  # '';
 
   home.activation.installAntigravityExtensions = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
     echo "📦 Installing Antigravity Extensions..."
     extensions=(
-      "golang.go"
-      "llvm-vs-code-extensions.vscode-clangd"
-      "meta.pyrefly"
-      "ms-python.debugpy"
-      "ms-python.python"
-      "ms-python.vscode-python-envs"
-      "redhat.java"
-      "shopify.ruby-lsp"
-      "vscjava.vscode-gradle"
-      "vscjava.vscode-java-debug"
-      "vscjava.vscode-java-dependency"
-      "vscjava.vscode-java-pack"
-      "vscjava.vscode-java-test"
-      "vscjava.vscode-maven"
-      "hashicorp.terraform"
+      "foxundermoon.shell-format"
+"golang.go"
+"hashicorp.terraform"
+"jnoortheen.nix-ide"
+"llvm-vs-code-extensions.vscode-clangd"
+"mads-hartmann.bash-ide-vscode"
+"meta.pyrefly"
+"ms-python.debugpy"
+"ms-python.python"
+# "ms-python.vscode-pylance"
+"ms-python.vscode-python-envs"
+# "ms-vscode-remote.remote-ssh"
+# "ms-vscode-remote.remote-ssh-edit"
+"redhat.ansible"
+"redhat.java"
+"redhat.vscode-yaml"
+"shopify.ruby-lsp"
+"timonwong.shellcheck"
+"vscjava.vscode-gradle"
+"vscjava.vscode-java-debug"
+"vscjava.vscode-java-dependency"
+"vscjava.vscode-java-pack"
+"vscjava.vscode-java-test"
+"vscjava.vscode-maven"
     )
 
     for ext in "''${extensions[@]}"; do
-      ${pkgs.antigravity}/bin/antigravity --install-extension "$ext" 
+      /usr/bin/antigravity --install-extension "$ext" || true 
     done
   '';
 
-  # home.activation.joplinPlugins = lib.hm.dag.entryAfter [ "writeBoundary" ] (
-  #   let
-  #     pluginDir = "${homeDir}/.config/joplin-desktop/plugins";
 
-  #     jplPlugins = {
-  #       "joplin.plugin.alondmnt.jarvis" =
-  #         "https://github.com/joplin/plugins/raw/master/plugins/joplin.plugin.alondmnt.jarvis/plugin.jpl";
+  home.activation.installNpmPackages = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+    echo "📦 Installing Global NPM Packages..."
+    if [ ! -d ${homeDir}/.npm-global ]; then
+      mkdir -p ${homeDir}/.npm-global
+    fi
+    packages=(
+      "@openai/codex"
+      "@google/gemini-cli"
+    )
 
-  #       "home.sword.NoteLLM" =
-  #         "https://github.com/joplin/plugins/raw/master/plugins/home.sword.NoteLLM/plugin.jpl";
-
-  #       "joplin.plugin.note.tabs" =
-  #         "https://github.com/joplin/plugins/raw/master/plugins/joplin.plugin.note.tabs/plugin.jpl";
-
-  #       "org.otherware.joplin-publish" =
-  #         "https://github.com/joplin/plugins/raw/master/plugins/org.otherware.joplin-publish/plugin.jpl";
-
-  #       "plugin.calebjohn.rich-markdown" =
-  #         "https://github.com/joplin/plugins/raw/master/plugins/plugin.calebjohn.rich-markdown/plugin.jpl";
-  #     };
-  #   in
-  #   ''
-  #     echo "📦 Installing Joplin plugins (.jpl files)..."
-
-  #     mkdir -p ${pluginDir}
-
-  #     ${lib.concatStringsSep "\n" (
-  #       lib.mapAttrsToList (filename: url: ''
-  #         echo "→ Downloading ${filename}..."
-  #         ${pkgs.curlFull}/bin/curl -fsSL "${url}" -o ${pluginDir}/${filename}.jpl
-  #       '') jplPlugins
-  #     )}
-  #   ''
-  # );
-
-  # home.activation.installNpmPackages = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
-  #   echo "📦 Installing Global NPM Packages..."
-  #   if [ ! -d ${homeDir}/.npm-global ]; then
-  #     mkdir -p ${homeDir}/.npm-global
-  #   fi
-  #   export PATH="${pkgs.nodejs}/bin:$PATH"
-  #   ${npmBin} install -g --prefix ${homeDir}/.npm-global @google/gemini-cli
-  # '';
+    for pkg in "''${packages[@]}"; do
+      ${npmBin} install -g --prefix ${homeDir}/.npm-global "$pkg"
+    done
+  '';
 
 }
