@@ -12,6 +12,55 @@ let
   globalEnvPath = "${venvsDir}/global";
   uvBin = "${pkgs.uv}/bin/uv";
   npmBin = "${pkgs.nodejs}/bin/npm";
+  bashrcdDir = ./bashrcd;
+  bashrcdFiles =
+    lib.mapAttrs'
+      (
+        name: _:
+        lib.nameValuePair ".bashrc.d/${name}" {
+          source = bashrcdDir + "/${name}";
+        }
+      )
+      (
+        lib.filterAttrs (name: type: type == "regular" && lib.hasSuffix ".sh" name) (
+          builtins.readDir bashrcdDir
+        )
+      );
+  rtk = pkgs.stdenv.mkDerivation rec {
+    pname = "rtk";
+    version = "0.40.0";
+
+    src =
+      let
+        platform =
+          {
+            x86_64-linux = {
+              asset = "rtk-x86_64-unknown-linux-musl.tar.gz";
+              hash = "sha256-p10hCkRYdBBrwW2itO+6AdNtKXr6M+wTRyjy1fQu9a8=";
+            };
+            aarch64-linux = {
+              asset = "rtk-aarch64-unknown-linux-gnu.tar.gz";
+              hash = "sha256-HQCHrWKhgsCDPCJRrGeLXgU1ZBjZGqVzBaxRoSbJsQI=";
+            };
+          }
+          .${pkgs.stdenv.hostPlatform.system}
+            or (throw "rtk is not packaged for ${pkgs.stdenv.hostPlatform.system}");
+      in
+      pkgs.fetchurl {
+        url = "https://github.com/rtk-ai/rtk/releases/download/v${version}/${platform.asset}";
+        hash = platform.hash;
+      };
+
+    sourceRoot = ".";
+    dontConfigure = true;
+    dontBuild = true;
+
+    installPhase = ''
+      runHook preInstall
+      install -Dm755 rtk $out/bin/rtk
+      runHook postInstall
+    '';
+  };
 in
 
 {
@@ -88,13 +137,12 @@ in
     # mkdir .npm-global
     # npm config set prefix ~/.npm-global
     # PATH="$HOME/.npm-global/bin:$PATH"
-    # npm install -g @openai/codex
-    # npm install -g @google/gemini-cli
     # n8n
     # lmstudio
     # ollama-cuda
     # open-webui
     # librechat
+    rtk
 
     # warp-terminal
     # chatbox # desktop app, android also available
@@ -229,6 +277,10 @@ in
   #copilot plugin marketplace add obra/superpowers-marketplace
   # gemini extensions install https://github.com/obra/superpowers
 
+  home.file = bashrcdFiles // {
+    ".bashrc".source = ./bashrc;
+  };
+
   programs.vscode = {
     enable = true;
     package = pkgs.vscode;
@@ -298,6 +350,7 @@ in
         "git diff"
         "git show"
       ];
+      "diffEditor.ignoreTrimWhitespace" = false;
 
     };
     # settings = { "editor.tabSize" = 2; };
@@ -348,7 +401,6 @@ in
   # # com.brave.Browser - Plasma Integration does not work
   #  org.chromium.Chromium - Plasma integration works
 
-  
   # #     # AI
   # #     # io.github.qwersyk.Newelle
   # #     # com.jeffser.Alpaca
@@ -392,39 +444,38 @@ in
   # '';
 
   home.activation.installAntigravityExtensions = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
-    echo "📦 Installing Antigravity Extensions..."
-    extensions=(
-      "foxundermoon.shell-format"
-"golang.go"
-"hashicorp.terraform"
-"jnoortheen.nix-ide"
-"llvm-vs-code-extensions.vscode-clangd"
-"mads-hartmann.bash-ide-vscode"
-"meta.pyrefly"
-"ms-python.debugpy"
-"ms-python.python"
-# "ms-python.vscode-pylance"
-"ms-python.vscode-python-envs"
-# "ms-vscode-remote.remote-ssh"
-# "ms-vscode-remote.remote-ssh-edit"
-"redhat.ansible"
-"redhat.java"
-"redhat.vscode-yaml"
-"shopify.ruby-lsp"
-"timonwong.shellcheck"
-"vscjava.vscode-gradle"
-"vscjava.vscode-java-debug"
-"vscjava.vscode-java-dependency"
-"vscjava.vscode-java-pack"
-"vscjava.vscode-java-test"
-"vscjava.vscode-maven"
-    )
+        echo "📦 Installing Antigravity Extensions..."
+        extensions=(
+          "foxundermoon.shell-format"
+    "golang.go"
+    "hashicorp.terraform"
+    "jnoortheen.nix-ide"
+    "llvm-vs-code-extensions.vscode-clangd"
+    "mads-hartmann.bash-ide-vscode"
+    "meta.pyrefly"
+    "ms-python.debugpy"
+    "ms-python.python"
+    # "ms-python.vscode-pylance"
+    "ms-python.vscode-python-envs"
+    # "ms-vscode-remote.remote-ssh"
+    # "ms-vscode-remote.remote-ssh-edit"
+    "redhat.ansible"
+    "redhat.java"
+    "redhat.vscode-yaml"
+    "shopify.ruby-lsp"
+    "timonwong.shellcheck"
+    "vscjava.vscode-gradle"
+    "vscjava.vscode-java-debug"
+    "vscjava.vscode-java-dependency"
+    "vscjava.vscode-java-pack"
+    "vscjava.vscode-java-test"
+    "vscjava.vscode-maven"
+        )
 
-    for ext in "''${extensions[@]}"; do
-      /usr/bin/antigravity --install-extension "$ext" || true 
-    done
+        for ext in "''${extensions[@]}"; do
+          /usr/bin/antigravity --install-extension "$ext" || true 
+        done
   '';
-
 
   home.activation.installNpmPackages = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
     echo "📦 Installing Global NPM Packages..."
