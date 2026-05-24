@@ -41,6 +41,7 @@ extract() {
 # Find text in the master branch
 find_in_master_branch() {
   local target_ref
+  local grep_status
 
   if [ -z "$1" ]; then
     echo "Usage: find_in_master_branch <pattern> [path ...]"
@@ -69,4 +70,16 @@ find_in_master_branch() {
   fi
 
   git grep -n -- "$1" "$target_ref" -- "${@:2}"
+  grep_status=$?
+
+  if [ "$grep_status" -eq 0 ]; then
+    return 0
+  fi
+
+  if [ "$grep_status" -eq 1 ]; then
+    echo "No matches found for '$1' in $target_ref"
+    return 1
+  fi
+
+  return "$grep_status"
 }
