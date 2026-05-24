@@ -37,3 +37,36 @@ extract() {
     echo "'$1' is not a valid file"
   fi
 }
+
+# Find text in the master branch
+find_in_master_branch() {
+  local target_ref
+
+  if [ -z "$1" ]; then
+    echo "Usage: find_in_master_branch <pattern> [path ...]"
+    return 1
+  fi
+
+  if ! git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
+    echo "Not inside a git repository"
+    return 1
+  fi
+
+  for ref in master origin/master main origin/main; do
+    if git rev-parse --verify "$ref" >/dev/null 2>&1; then
+      target_ref="$ref"
+      break
+    fi
+  done
+
+  if [ -z "$target_ref" ] && git symbolic-ref refs/remotes/origin/HEAD >/dev/null 2>&1; then
+    target_ref="$(git symbolic-ref --short refs/remotes/origin/HEAD)"
+  fi
+
+  if [ -z "$target_ref" ]; then
+    echo "master/main branch not found"
+    return 1
+  fi
+
+  git grep -n -- "$1" "$target_ref" -- "${@:2}"
+}
