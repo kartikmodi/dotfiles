@@ -10,7 +10,7 @@
     repo: "deb [signed-by=/usr/share/keyrings/helm.gpg] https://packages.buildkite.com/helm-linux/helm-debian/any/ any main"
     state: present
     filename: helm
-    update_cache: yes
+    update_cache: true
 
 - name: Install Helm
   ansible.builtin.apt:
