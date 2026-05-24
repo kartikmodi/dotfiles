@@ -1,3 +1,28 @@
 ---
-- name: Import shared tooling tasks
-  ansible.builtin.import_tasks: ../tooling.yml
+- name: Download and install Helm GPG key
+  ansible.builtin.shell: |
+    curl -fsSL https://packages.buildkite.com/helm-linux/helm-debian/gpgkey | gpg --dearmor | sudo tee /usr/share/keyrings/helm.gpg > /dev/null
+  args:
+    creates: /usr/share/keyrings/helm.gpg
+
+- name: Add Helm apt repository
+  ansible.builtin.apt_repository:
+    repo: "deb [signed-by=/usr/share/keyrings/helm.gpg] https://packages.buildkite.com/helm-linux/helm-debian/any/ any main"
+    state: present
+    filename: helm
+    update_cache: yes
+
+- name: Install Helm
+  ansible.builtin.apt:
+    name: helm
+    state: present
+
+- name: Download k9s .deb
+  ansible.builtin.get_url:
+    url: "https://github.com/derailed/k9s/releases/download/v0.50.9/k9s_linux_amd64.deb"
+    dest: "/tmp/k9s50.9.deb"
+
+- name: Install k9s
+  ansible.builtin.apt:
+    deb: "/tmp/k9s50.9.deb"
+    state: present

@@ -2,4 +2,4 @@
 - name: Install shared Kubernetes tooling
   ansible.builtin.include_role:
     name: containers
-    tasks_from: tooling.yml
+    tasks_from: tooling
