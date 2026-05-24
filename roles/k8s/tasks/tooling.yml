@@ -1,3 +1,5 @@
 ---
 - name: Install shared Kubernetes tooling
-  ansible.builtin.include_tasks: "{{ role_path }}/../../containers/tooling.yml"
+  ansible.builtin.include_role:
+    name: containers
+    tasks_from: tooling
