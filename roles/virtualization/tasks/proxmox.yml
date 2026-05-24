@@ -1,0 +1,5 @@
+---
+- name: Placeholder for Proxmox-specific tasks
+  ansible.builtin.debug:
+    msg: "No Proxmox-specific tasks are currently defined for host {{ inventory_hostname }}."
+  changed_when: false
