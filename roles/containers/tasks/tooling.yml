@@ -1,0 +1,3 @@
+---
+- name: Import shared tooling tasks
+  ansible.builtin.import_tasks: ../tooling.yml
