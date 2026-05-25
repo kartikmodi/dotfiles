@@ -96,6 +96,7 @@ in
     # nixglPkgs.nixGLIntel
     # nixglPkgs.nixVulkanIntel
     nil
+    nixd
 
     # dev
     gh
@@ -136,7 +137,6 @@ in
     # AI
     # mkdir .npm-global
     # npm config set prefix ~/.npm-global
-    # PATH="$HOME/.npm-global/bin:$PATH"
     # n8n
     # lmstudio
     # ollama-cuda
@@ -239,6 +239,11 @@ in
     ytdl-sub
     google-drive-ocamlfuse
 
+    # AI
+    # hermes-agent
+    # TrustClaw
+
+    # NeverWrite #check in future
     # remote desktop
     #remmina
     # rustdesk-flutter
@@ -279,32 +284,21 @@ in
 
   home.file = bashrcdFiles // {
     ".bashrc".source = ./bashrc;
+    ".npmrc".text = "prefix = ${homeDir}/.npm-global";
   };
 
   programs.vscode = {
     enable = true;
     package = pkgs.vscode;
-    profiles.default.extensions = with pkgs.vscode-extensions; [
-      jnoortheen.nix-ide
-      timonwong.shellcheck
-      foxundermoon.shell-format
-      mads-hartmann.bash-ide-vscode
-      ms-python.python
-      # ms-python.vscode-pylance
-      redhat.ansible
-      redhat.vscode-yaml
-      ms-vscode-remote.remote-ssh
-      ms-vscode-remote.remote-ssh-edit
-      redhat.java
-      hashicorp.terraform
-
-      # saoudrizwan.claude-dev # cline
-
-    ];
-    # roo code
-    # ext install rxliuli.joplin-vscode-plugin
-    # ext install dvirtz.parquet-viewer
-    # direnv plugin
+    # Extensions are installed imperatively via the activation script below
+    # (`home.activation.installVscodeExtensions`) using `code --install-extension`.
+    # This avoids HM's symlink-based extension management while keeping the
+    # extension list declared in this file.
+    #
+    # mutableExtensionsDir = true lets VS Code (and our activation script)
+    # write into ~/.vscode/extensions/, so installed extensions persist
+    # across `home-manager switch` runs.
+    mutableExtensionsDir = true;
 
     profiles.default.userSettings = {
       "yaml.format.enable" = true;
@@ -342,18 +336,15 @@ in
         "editor.defaultFormatter" = "foxundermoon.shell-format";
       };
       "workbench.colorTheme" = "Default Light+";
-      "roo-cline.allowedCommands" = [
-        "npm test"
-        "npm install"
-        "tsc"
-        "git log"
-        "git diff"
-        "git show"
-      ];
       "diffEditor.ignoreTrimWhitespace" = false;
-
+      "terminal.integrated.commandsToSkipShell" = [
+        "kilo-code.new.agentManagerOpen"
+        "kilo-code.new.agentManager.showTerminal"
+      ];
     };
-    # settings = { "editor.tabSize" = 2; };
+    # settings = {
+    #   "editor.tabSize" = 2;
+    # };
   };
 
   programs.vim = {
@@ -389,8 +380,6 @@ in
     #   vim-plug
     # ];
   };
-  # home.file.".npmrc".text = "prefix = ${homeDir}/.npm-global";
-
   # home.activation.flatpakSetup = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
   #   DISPLAY=:0 /usr/bin/flatpak --verbose remote-add --user --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo || true
   # '';
@@ -423,73 +412,133 @@ in
   #   done
   # '';
 
-  # home.activation.setupUvEnvs = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
-  #   if [ ! -d "${globalEnvPath}" ]; then
-  #     mkdir -p ${globalEnvPath}
-  #     ${uvBin} venv ${globalEnvPath}
-  #   fi
-
-  #   whls=(
-  #     # AI
-  #     huggingface_hub[cli]
-  #     # nvitop
-  #     # gpustat
-
-  #     # DB
-  #     # duckdb
-  #   )
-  #   for whl in "''${whls[@]}"; do
-  #     ${uvBin} pip install -p ${globalEnvPath} -U "$whl"
-  #   done
-  # '';
-
-  home.activation.installAntigravityExtensions = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
-        echo "📦 Installing Antigravity Extensions..."
-        extensions=(
-          "foxundermoon.shell-format"
-    "golang.go"
-    "hashicorp.terraform"
-    "jnoortheen.nix-ide"
-    "llvm-vs-code-extensions.vscode-clangd"
-    "mads-hartmann.bash-ide-vscode"
-    "meta.pyrefly"
-    "ms-python.debugpy"
-    "ms-python.python"
-    # "ms-python.vscode-pylance"
-    "ms-python.vscode-python-envs"
-    # "ms-vscode-remote.remote-ssh"
-    # "ms-vscode-remote.remote-ssh-edit"
-    "redhat.ansible"
-    "redhat.java"
-    "redhat.vscode-yaml"
-    "shopify.ruby-lsp"
-    "timonwong.shellcheck"
-    "vscjava.vscode-gradle"
-    "vscjava.vscode-java-debug"
-    "vscjava.vscode-java-dependency"
-    "vscjava.vscode-java-pack"
-    "vscjava.vscode-java-test"
-    "vscjava.vscode-maven"
-        )
-
-        for ext in "''${extensions[@]}"; do
-          /usr/bin/antigravity --install-extension "$ext" || true 
-        done
-  '';
-
-  home.activation.installNpmPackages = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
-    echo "📦 Installing Global NPM Packages..."
-    if [ ! -d ${homeDir}/.npm-global ]; then
-      mkdir -p ${homeDir}/.npm-global
+  home.activation.setupUvEnvs = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+    if [ ! -d "${globalEnvPath}" ]; then
+      mkdir -p ${globalEnvPath}
+      ${uvBin} venv ${globalEnvPath}
     fi
-    packages=(
-      "@openai/codex"
-      "@google/gemini-cli"
-    )
 
-    for pkg in "''${packages[@]}"; do
-      ${npmBin} install -g --prefix ${homeDir}/.npm-global "$pkg"
+    whls=(
+      # AI
+      huggingface_hub[cli]
+      # nvitop
+      # gpustat
+      athenacli
+
+      # DB
+      # duckdb
+    )
+    for whl in "''${whls[@]}"; do
+      ${uvBin} pip install -p ${globalEnvPath} -U "$whl"
     done
   '';
+
+  home.activation.installVscodeExtensions =
+    let
+      vscodeExtensions = [
+        "dvirtz.parquet-viewer"
+        "foxundermoon.shell-format"
+        "github.copilot"
+        "github.copilot-chat"
+        "github.vscode-pull-request-github"
+        "hashicorp.terraform"
+        "jnoortheen.nix-ide"
+        "kilocode.kilo-code"
+        "mads-hartmann.bash-ide-vscode"
+        "ms-python.python"
+        "ms-python.vscode-pylance"
+        "ms-vscode-remote.remote-ssh"
+        "ms-vscode-remote.remote-ssh-edit"
+        "openai.chatgpt"
+        "redhat.ansible"
+        "redhat.java"
+        "redhat.vscode-yaml"
+        "saoudrizwan.claude-dev"
+        "timonwong.shellcheck"
+      ];
+      vscodeExtensionsHash = builtins.hashString "sha256" (
+        lib.concatStringsSep "\n" (lib.sort (a: b: a < b) vscodeExtensions)
+      );
+    in
+    lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+      marker="${homeDir}/.cache/hm-vscode-exts.${vscodeExtensionsHash}"
+      if [ -f "$marker" ]; then
+        echo "✅ VS Code extensions already installed (delete $marker to force reinstall)"
+      else
+        echo "📦 Installing VS Code Extensions..."
+        rm -f ${homeDir}/.cache/hm-vscode-exts.* 2>/dev/null || true
+        for ext in ${lib.escapeShellArgs vscodeExtensions}; do
+          ${pkgs.vscode}/bin/code --install-extension "$ext" --force || true
+        done
+        mkdir -p "$(dirname "$marker")" && touch "$marker"
+      fi
+    '';
+
+  home.activation.installAntigravityExtensions =
+    let
+      antigravityExtensions = [
+        "foxundermoon.shell-format"
+        "golang.go"
+        "hashicorp.terraform"
+        "jnoortheen.nix-ide"
+        "llvm-vs-code-extensions.vscode-clangd"
+        "mads-hartmann.bash-ide-vscode"
+        "meta.pyrefly"
+        "ms-python.debugpy"
+        "ms-python.python"
+        # "ms-python.vscode-pylance"
+        "ms-python.vscode-python-envs"
+        # "ms-vscode-remote.remote-ssh"
+        # "ms-vscode-remote.remote-ssh-edit"
+        "redhat.ansible"
+        "redhat.java"
+        "redhat.vscode-yaml"
+        "shopify.ruby-lsp"
+        "timonwong.shellcheck"
+      ];
+      antigravityExtensionsHash = builtins.hashString "sha256" (
+        lib.concatStringsSep "\n" (lib.sort (a: b: a < b) antigravityExtensions)
+      );
+    in
+    lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+      marker="${homeDir}/.cache/hm-antigravity-exts.${antigravityExtensionsHash}"
+      if [ -f "$marker" ]; then
+        echo "✅ Antigravity extensions already installed (delete $marker to force reinstall)"
+      else
+        echo "📦 Installing Antigravity Extensions..."
+        rm -f ${homeDir}/.cache/hm-antigravity-exts.* 2>/dev/null || true
+        for ext in ${lib.escapeShellArgs antigravityExtensions}; do
+          /usr/bin/antigravity --install-extension "$ext" || true
+        done
+        mkdir -p "$(dirname "$marker")" && touch "$marker"
+      fi
+    '';
+
+  home.activation.installNpmPackages =
+    let
+      npmPackages = [
+        "@google/gemini-cli"
+        "@openai/codex"
+        # "@anthropic-ai/claude-code"
+        # "@kilocode/cli"
+        # "opencode-ai"
+      ];
+      npmPackagesHash = builtins.hashString "sha256" (
+        lib.concatStringsSep "\n" (lib.sort (a: b: a < b) npmPackages)
+      );
+    in
+    lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+      marker="${homeDir}/.cache/hm-npm-packages.${npmPackagesHash}"
+      if [ -f "$marker" ]; then
+        echo "✅ Global NPM packages already installed (delete $marker to force reinstall)"
+      else
+        echo "📦 Installing Global NPM Packages..."
+        rm -f ${homeDir}/.cache/hm-npm-packages.* 2>/dev/null || true
+        for pkg in ${lib.escapeShellArgs npmPackages}; do
+          ${npmBin} install -g --prefix ${homeDir}/.npm-global "$pkg" || true
+        done
+        mkdir -p "$(dirname "$marker")" && touch "$marker"
+      fi
+    '';
 
 }
