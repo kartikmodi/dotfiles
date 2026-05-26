@@ -107,6 +107,7 @@ in
     postgresql
     # mongodb
     nodejs
+    # bun
     clickhouse
     clickhouse-cli
     # duckdb # does not work very well, install the offical way
@@ -290,14 +291,6 @@ in
   programs.vscode = {
     enable = true;
     package = pkgs.vscode;
-    # Extensions are installed imperatively via the activation script below
-    # (`home.activation.installVscodeExtensions`) using `code --install-extension`.
-    # This avoids HM's symlink-based extension management while keeping the
-    # extension list declared in this file.
-    #
-    # mutableExtensionsDir = true lets VS Code (and our activation script)
-    # write into ~/.vscode/extensions/, so installed extensions persist
-    # across `home-manager switch` runs.
     mutableExtensionsDir = true;
 
     profiles.default.userSettings = {
@@ -342,9 +335,6 @@ in
         "kilo-code.new.agentManager.showTerminal"
       ];
     };
-    # settings = {
-    #   "editor.tabSize" = 2;
-    # };
   };
 
   programs.vim = {
@@ -414,8 +404,8 @@ in
 
   home.activation.setupUvEnvs = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
     if [ ! -d "${globalEnvPath}" ]; then
-      mkdir -p ${globalEnvPath}
-      ${uvBin} venv ${globalEnvPath}
+      mkdir -p "${globalEnvPath}"
+      ${uvBin} venv "${globalEnvPath}"
     fi
 
     whls=(
@@ -429,7 +419,7 @@ in
       # duckdb
     )
     for whl in "''${whls[@]}"; do
-      ${uvBin} pip install -p ${globalEnvPath} -U "$whl"
+      ${uvBin} pip install -p "${globalEnvPath}" -U "$whl"
     done
   '';
 
@@ -438,8 +428,8 @@ in
       vscodeExtensions = [
         "dvirtz.parquet-viewer"
         "foxundermoon.shell-format"
-        "github.copilot"
-        "github.copilot-chat"
+        # "github.copilot" # https://code.visualstudio.com/blogs/2025/11/04/openSourceAIEditorSecondMilestone
+        "github.copilot-chat" # https://github.com/microsoft/vscode-copilot-chat
         "github.vscode-pull-request-github"
         "hashicorp.terraform"
         "jnoortheen.nix-ide"
@@ -495,6 +485,7 @@ in
         "redhat.vscode-yaml"
         "shopify.ruby-lsp"
         "timonwong.shellcheck"
+        "erennyuksell.ag-multi-account-switchboard"
       ];
       antigravityExtensionsHash = builtins.hashString "sha256" (
         lib.concatStringsSep "\n" (lib.sort (a: b: a < b) antigravityExtensions)
@@ -519,26 +510,17 @@ in
       npmPackages = [
         "@google/gemini-cli"
         "@openai/codex"
-        # "@anthropic-ai/claude-code"
-        # "@kilocode/cli"
-        # "opencode-ai"
+        "@anthropic-ai/claude-code"
+        "@kilocode/cli"
+        "opencode-ai"
       ];
-      npmPackagesHash = builtins.hashString "sha256" (
-        lib.concatStringsSep "\n" (lib.sort (a: b: a < b) npmPackages)
-      );
     in
-    lib.hm.dag.entryAfter [ "writeBoundary" ] ''
-      marker="${homeDir}/.cache/hm-npm-packages.${npmPackagesHash}"
-      if [ -f "$marker" ]; then
-        echo "✅ Global NPM packages already installed (delete $marker to force reinstall)"
-      else
-        echo "📦 Installing Global NPM Packages..."
-        rm -f ${homeDir}/.cache/hm-npm-packages.* 2>/dev/null || true
-        for pkg in ${lib.escapeShellArgs npmPackages}; do
-          ${npmBin} install -g --prefix ${homeDir}/.npm-global "$pkg" || true
-        done
-        mkdir -p "$(dirname "$marker")" && touch "$marker"
-      fi
+    lib.hm.dag.entryAfter [ "installPackages" ] ''
+      echo "📦 Installing Global NPM Packages..."
+      for pkg in ${lib.escapeShellArgs npmPackages}; do
+      PATH="${lib.makeBinPath [ pkgs.nodejs ]}:$PATH" \
+        ${npmBin} install -g --prefix ${homeDir}/.npm-global "$pkg" || true
+       done
     '';
 
 }
