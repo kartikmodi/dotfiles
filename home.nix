@@ -144,6 +144,7 @@ in
     # open-webui
     # librechat
     rtk
+    # zed-editor-fhs
 
     # warp-terminal
     # chatbox # desktop app, android also available
@@ -286,6 +287,7 @@ in
   home.file = bashrcdFiles // {
     ".bashrc".source = ./bashrc;
     ".npmrc".text = "prefix = ${homeDir}/.npm-global";
+    # ".config/opencode/opencode.jsonc".source = ./opencode.jsonc;
   };
 
   programs.vscode = {
@@ -371,11 +373,11 @@ in
     # ];
   };
   # home.activation.flatpakSetup = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
-  #   DISPLAY=:0 /usr/bin/flatpak --verbose remote-add --user --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo || true
-  # '';
+  #  DISPLAY=:0 /usr/bin/flatpak --verbose remote-add --user --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo || true
+  #'';
 
   # home.activation.flatpakApps = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
-  #     apps=(
+  #       apps=(
   # # Browsers
   # # com.brave.Browser - Plasma Integration does not work
   #  org.chromium.Chromium - Plasma integration works
@@ -386,7 +388,7 @@ in
   # #     # io.gitlab.theevilskeleton.Upscaler
   # #     # io.gpt4all.gpt4all
   # #     # com.cherry_ai.CherryStudio
-
+  # dev.zed.Zed
   # #     # Files
   # #     io.kapsa.drive
   # #     com.hunterwittenborn.Celeste
@@ -396,10 +398,10 @@ in
 
   # #     # rustdesk
   # #     # com.rustdesk.Rustdesk
-  #   )
-  #   for app in "''${apps[@]}"; do
-  #     /usr/bin/flatpak install --user -y flathub "$app"
-  #   done
+  #     )
+  #     for app in "''${apps[@]}"; do
+  #       /usr/bin/flatpak install --user -y flathub "$app"
+  #     done
   # '';
 
   home.activation.setupUvEnvs = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
@@ -445,6 +447,7 @@ in
         "redhat.vscode-yaml"
         "saoudrizwan.claude-dev"
         "timonwong.shellcheck"
+        "woozy-masta.codex-switch"
       ];
       vscodeExtensionsHash = builtins.hashString "sha256" (
         lib.concatStringsSep "\n" (lib.sort (a: b: a < b) vscodeExtensions)

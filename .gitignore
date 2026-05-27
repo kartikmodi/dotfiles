@@ -5,3 +5,4 @@ roles/geerlingguy.docker
 settings.json
 collections
 .env
+opencode.jsonc
