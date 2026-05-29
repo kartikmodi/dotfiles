@@ -3,6 +3,7 @@
   username,
   nixgl,
   nixglPkgs,
+  antigravityPkgs,
   lib,
   ...
 }:
@@ -12,6 +13,7 @@ let
   globalEnvPath = "${venvsDir}/global";
   uvBin = "${pkgs.uv}/bin/uv";
   npmBin = "${pkgs.nodejs}/bin/npm";
+  antigravityIdeBin = "${antigravityPkgs.google-antigravity-ide}/bin/antigravity-ide";
   bashrcdDir = ./bashrcd;
   bashrcdFiles =
     lib.mapAttrs'
@@ -144,6 +146,9 @@ in
     # open-webui
     # librechat
     rtk
+    # antigravityPkgs.default
+    # antigravityPkgs.google-antigravity-ide
+    antigravityPkgs.google-antigravity-cli
     # zed-editor-fhs
 
     # warp-terminal
@@ -264,7 +269,6 @@ in
 
     # cloud flare tunnel
 
-    # antigravity-fhs # older version, use dnf
     telegram-desktop
     # configure nfs
     # configure rsync pcloud

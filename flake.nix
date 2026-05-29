@@ -8,6 +8,10 @@
     home-manager.inputs.nixpkgs.follows = "nixpkgs";
     nixgl.url = "github:nix-community/nixGL";
     nixgl.inputs.nixpkgs.follows = "nixpkgs";
+    antigravity-nix = {
+      url = "github:jacopone/antigravity-nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
     # explicitly declare lib from nixpkgs for usage as flake:lib
     # lib = {
     #   url = "github:NixOS/nixpkgs/nixos-unstable";
@@ -22,6 +26,7 @@
       home-manager,
       # lib,
       nixgl,
+      antigravity-nix,
       ...
     }:
     let
@@ -47,6 +52,7 @@
         let
           pkgs = mkPkgs system;
           nixglPkgs = nixgl.packages.${system};
+          antigravityPkgs = antigravity-nix.packages.${system};
         in
         home-manager.lib.homeManagerConfiguration {
           inherit pkgs;
@@ -56,6 +62,7 @@
               username
               nixgl
               nixglPkgs
+              antigravityPkgs
               ;
           };
 
