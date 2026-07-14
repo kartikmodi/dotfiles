@@ -74,3 +74,5 @@ elif [ -f /usr/bin/apt ]; then
   alias upgrade='sudo apt update && sudo apt dist-upgrade && sudo apt autoremove && sudo apt clean'
   alias install='sudo apt install'
 fi
+
+alias jsonless='jq --color-output . | less -R'

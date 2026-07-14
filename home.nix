@@ -28,41 +28,6 @@ let
           builtins.readDir bashrcdDir
         )
       );
-  rtk = pkgs.stdenv.mkDerivation rec {
-    pname = "rtk";
-    version = "0.40.0";
-
-    src =
-      let
-        platform =
-          {
-            x86_64-linux = {
-              asset = "rtk-x86_64-unknown-linux-musl.tar.gz";
-              hash = "sha256-p10hCkRYdBBrwW2itO+6AdNtKXr6M+wTRyjy1fQu9a8=";
-            };
-            aarch64-linux = {
-              asset = "rtk-aarch64-unknown-linux-gnu.tar.gz";
-              hash = "sha256-HQCHrWKhgsCDPCJRrGeLXgU1ZBjZGqVzBaxRoSbJsQI=";
-            };
-          }
-          .${pkgs.stdenv.hostPlatform.system}
-            or (throw "rtk is not packaged for ${pkgs.stdenv.hostPlatform.system}");
-      in
-      pkgs.fetchurl {
-        url = "https://github.com/rtk-ai/rtk/releases/download/v${version}/${platform.asset}";
-        hash = platform.hash;
-      };
-
-    sourceRoot = ".";
-    dontConfigure = true;
-    dontBuild = true;
-
-    installPhase = ''
-      runHook preInstall
-      install -Dm755 rtk $out/bin/rtk
-      runHook postInstall
-    '';
-  };
 in
 
 {
@@ -145,7 +110,6 @@ in
     # ollama-cuda
     # open-webui
     # librechat
-    rtk
     # antigravityPkgs.default
     # antigravityPkgs.google-antigravity-ide
     antigravityPkgs.google-antigravity-cli
@@ -210,7 +174,7 @@ in
     # notes
     joplin-desktop
     obsidian
-    logseq
+    # logseq
 
     # productivity
     # qalculate-qt #may require qtwebengine
@@ -282,6 +246,8 @@ in
     super-productivity # older version available, look for other ways in future
     # logseq
     # obsidian
+    # siyuan
+    # rtk
 
   ];
   home.stateVersion = "25.11";
