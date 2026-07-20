@@ -486,6 +486,8 @@ in
         "@anthropic-ai/claude-code"
         "@kilocode/cli"
         "opencode-ai"
+        "mastra@latest"
+        "skills"
       ];
     in
     lib.hm.dag.entryAfter [ "installPackages" ] ''
@@ -495,5 +497,11 @@ in
         ${npmBin} install -g --prefix ${homeDir}/.npm-global "$pkg" || true
        done
     '';
+
+  home.activation.installMastraSkills = lib.hm.dag.entryAfter [ "installNpmPackages" ] ''
+    echo "🧩 Installing Mastra skills..."
+    PATH="${lib.makeBinPath [ pkgs.nodejs ]}:${homeDir}/.npm-global/bin:$PATH" \
+      ${homeDir}/.npm-global/bin/skills add mastra-ai/skills || true
+  '';
 
 }
